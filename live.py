@@ -18,7 +18,7 @@ SSE_FILES_PATH = ""
 REFRESH_TIME = 1
 
 
-@live.get("")
+@live.get("/")
 async def index():
     prompt = """
     Welcome to Bet4Live API
