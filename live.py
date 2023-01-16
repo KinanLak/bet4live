@@ -18,8 +18,26 @@ SSE_FILES_PATH = ""
 REFRESH_TIME = 1
 
 
-@live.get("/live")
+@live.get("")
+async def index():
+    prompt = """
+    Welcome to Bet4Live API
+
+    This API is used to get live data from the server to the client
+
+    The API is divided into 2 parts:
+
+    1. Score (Work in progress) -> /score
+    2. Users coins and users betslip -> /user&uid=<user_id>
+    """
+    return prompt
+
+
+@live.get("/user")
 async def sse(request: Request, uid: str = "Undefined"):
+    if uid == "Undefined":
+        return {"error": "User ID wasn't defined"}
+
     async def event_stream():
         first_load: bool = True
         while True:
