@@ -3,6 +3,7 @@ import asyncio
 import uvicorn
 
 from fastapi import FastAPI, Request
+from fastapi.responses import PlainTextResponse
 from starlette.responses import StreamingResponse
 from mysql_rq import test_mysql_connection
 from utilities import get_balance
@@ -18,7 +19,7 @@ SSE_FILES_PATH = ""
 REFRESH_TIME = 1
 
 
-@live.get("/")
+@live.get("/", response_class=PlainTextResponse)
 async def index():
     prompt = """
     Welcome to Bet4Live API
