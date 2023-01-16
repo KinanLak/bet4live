@@ -1,0 +1,7 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    // Max line lenght of flake8 to 200
+    "python.linting.flake8Args": [
+        "--max-line-length=200"
+    ],
+}
