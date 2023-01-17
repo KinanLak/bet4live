@@ -13,8 +13,8 @@ live = FastAPI(title="Bet4Live", description="Bet4Live API for score, users coin
                version="1.0.0", terms_of_service="https://bet4free.com", debug=True)
 
 
-# SSE_FILES_PATH = "/home/ubuntu/out/"
-SSE_FILES_PATH = ""
+SSE_FILES_PATH = "/home/ubuntu/out/"
+# SSE_FILES_PATH = ""
 
 REFRESH_TIME = 1
 
