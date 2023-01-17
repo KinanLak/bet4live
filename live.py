@@ -29,7 +29,7 @@ async def index():
     The API is divided into 2 parts:
 
     1. Score (Work in progress) -> /score
-    2. Users coins and users betslip -> /user&uid=<user_id>
+    2. Users coins and users betslip -> /user?uid=<user_id>
     """
     return prompt
 
