@@ -45,6 +45,7 @@ async def sse(request: Request, uid: str = "Undefined"):
 
     async def event_stream():
         first_load: bool = True
+        print(first_load)
         while True:
             if first_load:
                 balance: int = get_balance(uid)
@@ -57,7 +58,7 @@ async def sse(request: Request, uid: str = "Undefined"):
             with open(SSE_FILES_PATH + "balance.txt", "r") as balancefile:
                 lines = balancefile.readlines()
                 balancefile.close()
-
+            print(lines)
             if len(lines) > 0:
                 for line in lines:
                     line_notrail = line.strip()
@@ -78,7 +79,7 @@ async def sse(request: Request, uid: str = "Undefined"):
             with open(SSE_FILES_PATH + "betslip.txt", "r") as betslipfile:
                 lines = betslipfile.readlines()
                 betslipfile.close()
-
+            print(lines)
             if len(lines) > 0:
                 for line in lines:
                     line_notrail = line.strip()
@@ -97,7 +98,7 @@ async def sse(request: Request, uid: str = "Undefined"):
                         first_load = False
                         break
 
-                await asyncio.sleep(REFRESH_TIME)
+            await asyncio.sleep(REFRESH_TIME)
 
             disconnected = await request.is_disconnected()
             if disconnected:
