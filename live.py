@@ -22,6 +22,12 @@ else:
     SSE_FILES_PATH = "/home/ubuntu/out/"
 
 
+def printf(text):
+    file = open(SSE_FILES_PATH + "draft.txt", "a")
+    file.write(str(text)+"\n")
+    file.close()
+
+
 @live.get("/", response_class=PlainTextResponse)
 async def index():
     prompt = """
@@ -44,14 +50,15 @@ def sse(request: Request, uid: str = "Undefined"):
         draftfile.write("HEY TOI LA")
         draftfile.close()
 
-    print("HEY FDP", flush=True)
+    printf("UID: " + uid)
 
     if not checkExistingUID(uid):
         return {"event": "error", "timestamp": int(time.time()), "data": 9001}
 
     async def event_stream():
         first_load: bool = True
-        print(first_load)
+        printf("First load: " + str(first_load))
+        printf("DÉBUT DE LA BOUCLE")
         while True:
             if first_load:
                 balance: int = get_balance(uid)
@@ -68,16 +75,19 @@ def sse(request: Request, uid: str = "Undefined"):
                 for line in lines:
                     line_notrail = line.strip()
                     if line_notrail == uid:
+                        printf("iCI LA CONDITION EST VALIDE SALOPE")
                         balance: int = get_balance(uid)
 
+                        printf("ICI CA YIELD FDP")
                         yield "event: betslip\ndata: " + str(balance) + "\nretry: 10000\n\n"
 
                         # Remove the line from the file
                         lines.remove(line)
+                        printf("LIGNE VA ETRE SUPPRIMÉ")
                         with open(SSE_FILES_PATH + "balance.txt", "w") as balancefile:
                             balancefile.writelines(lines)
                             balancefile.close()
-
+                        printf("LIGNE EST SUPPRIMÉ")
                         first_load = False
                         break
 
@@ -103,10 +113,12 @@ def sse(request: Request, uid: str = "Undefined"):
                         first_load = False
                         break
 
+            printf("ICI CA DORT")
             await asyncio.sleep(REFRESH_TIME)
 
             disconnected = await request.is_disconnected()
             if disconnected:
+                printf("ICI CA DECONECTE FDP")
                 print("Client disconnected")
                 break
     return StreamingResponse(event_stream(), media_type="text/event-stream")
