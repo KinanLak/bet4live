@@ -73,7 +73,7 @@ async def sse(request: Request, uid: str = "Undefined"):
                         # Remove the line from the file
                         lines.remove(line)
                         with open(SSE_FILES_PATH + "balance.txt", "w") as balancefile:
-                            balancefile.writelines(balancefile)
+                            balancefile.writelines(lines)
                             balancefile.close()
 
                         first_load = False
@@ -96,7 +96,7 @@ async def sse(request: Request, uid: str = "Undefined"):
                         # Remove the line from the file
                         lines.remove(line)
                         with open(SSE_FILES_PATH + "betslip.txt", "w") as betslipfile:
-                            betslipfile.writelines(betslipfile)
+                            betslipfile.writelines(lines)
                             betslipfile.close()
 
                         first_load = False
