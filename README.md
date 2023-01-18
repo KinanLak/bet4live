@@ -3,4 +3,4 @@
 
 ### The API is divided into 2 parts:
 1. Score (Not available yet) -> /score
-2. Users coins and users betslip -> /user?uid=<user_id>
+2. User's coins and user's betslip -> /user?uid=<user_id>
