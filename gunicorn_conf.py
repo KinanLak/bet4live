@@ -12,7 +12,7 @@ workers = cpu_count() + 1
 
 worker_class = 'uvicorn.workers.UvicornH11Worker'
 
-GUNICORN_CMD_ARGS = "--keep-alive 0"
+GUNICORN_CMD_ARGS = "--keep-alive 10"
 
 # Logging Options
 
