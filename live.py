@@ -40,6 +40,10 @@ async def index():
 @live.get("/user")
 def sse(request: Request, uid: str = "Undefined"):
 
+    with open(SSE_FILES_PATH + "draft.txt", "a") as draftfile:
+        draftfile.write("HEY TOI LA")
+        draftfile.close()
+
     print("HEY FDP")
 
     if not checkExistingUID(uid):

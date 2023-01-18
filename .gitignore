@@ -1,6 +1,7 @@
 # My ignore file
 betslip.txt
 balance.txt
+draft.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
