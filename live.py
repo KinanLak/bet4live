@@ -38,7 +38,9 @@ async def index():
 
 
 @live.get("/user")
-async def sse(request: Request, uid: str = "Undefined"):
+def sse(request: Request, uid: str = "Undefined"):
+
+    print("HEY FDP")
 
     if not checkExistingUID(uid):
         return {"event": "error", "timestamp": int(time.time()), "data": 9001}
