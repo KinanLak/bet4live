@@ -44,7 +44,7 @@ def sse(request: Request, uid: str = "Undefined"):
         draftfile.write("HEY TOI LA")
         draftfile.close()
 
-    print("HEY FDP")
+    print("HEY FDP", flush=True)
 
     if not checkExistingUID(uid):
         return {"event": "error", "timestamp": int(time.time()), "data": 9001}
