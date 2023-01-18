@@ -46,14 +46,12 @@ async def sse(request: Request, uid: str = "Undefined"):
     async def event_stream():
         first_load: bool = True
         while True:
-            response = {"event": "", "timestamp": int(time.time()), "data": ""}
             if first_load:
-                response["event"] = "balance"
-                response["data"] = get_balance(uid)
-                yield str(response)+"\n\n"
-                response["event"] = "betslip"
-                response["data"] = getBetslipLive(uid)
-                yield str(response)+"\n\n"
+                balance: int = get_balance(uid)
+                betslip: list = getBetslipLive(uid)
+                yield "event: betslip\ndata: " + str(balance) + "\nretry: 10000\n\n"
+                yield "event: betslip\ndata: " + str(betslip) + "\nretry: 10000\n\n"
+
                 first_load = False
 
             with open(SSE_FILES_PATH + "balance.txt", "r") as balancefile:
@@ -66,9 +64,7 @@ async def sse(request: Request, uid: str = "Undefined"):
                     if line_notrail == uid:
                         balance: int = get_balance(uid)
 
-                        response["event"] = "balance"
-                        response["data"] = balance
-                        yield str(response)+"\n\n"
+                        yield "event: betslip\ndata: " + str(balance) + "\nretry: 10000\n\n"
 
                         # Remove the line from the file
                         lines.remove(line)
@@ -89,9 +85,8 @@ async def sse(request: Request, uid: str = "Undefined"):
                     if line_notrail == uid:
                         betslip: list = getBetslipLive(uid)
 
-                        response["event"] = "betslip"
-                        response["data"] = betslip
-                        yield str(response)+"\n\n"
+                        # Yield in correct SSE format
+                        yield "event: betslip\ndata: " + str(betslip)+"\nretry: 10000\n\n"
 
                         # Remove the line from the file
                         lines.remove(line)
