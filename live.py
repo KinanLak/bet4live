@@ -16,10 +16,10 @@ live = FastAPI(title="Bet4Live", description="Bet4Live API for score, users coin
 
 REFRESH_TIME = 1
 
-if sys.platform == "linux":
-    SSE_FILES_PATH = "/home/ubuntu/out/"
-elif sys.platform == "darwin":
+if sys.platform == "darwin":
     SSE_FILES_PATH = ""
+else:
+    SSE_FILES_PATH = "/home/ubuntu/out/"
 
 
 @live.get("/", response_class=PlainTextResponse)
@@ -50,15 +50,14 @@ async def sse(request: Request, uid: str = "Undefined"):
             if first_load:
                 balance: int = get_balance(uid)
                 betslip: list = getBetslipLive(uid)
-                yield "event: betslip\ndata: " + str(balance) + "\nretry: 10000\n\n"
-                yield "event: betslip\ndata: " + str(betslip) + "\nretry: 10000\n\n"
+                yield "event: betslip\ndata: " + str(balance) + "\nretry: 10000\n\nevent: betslip\ndata: " + str(betslip) + "\nretry: 10000\n\n"
 
                 first_load = False
 
             with open(SSE_FILES_PATH + "balance.txt", "r") as balancefile:
                 lines = balancefile.readlines()
                 balancefile.close()
-            print(lines)
+
             if len(lines) > 0:
                 for line in lines:
                     line_notrail = line.strip()
@@ -79,10 +78,10 @@ async def sse(request: Request, uid: str = "Undefined"):
             with open(SSE_FILES_PATH + "betslip.txt", "r") as betslipfile:
                 lines = betslipfile.readlines()
                 betslipfile.close()
-            print(lines)
             if len(lines) > 0:
                 for line in lines:
                     line_notrail = line.strip()
+
                     if line_notrail == uid:
                         betslip: list = getBetslipLive(uid)
 
