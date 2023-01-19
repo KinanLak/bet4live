@@ -86,7 +86,7 @@ def sse(request: Request, uid: str = "Undefined"):
                             balance: int = get_balance(uid)
 
                             printf("ICI CA YIELD FDP")
-                            yield "event: betslip\ndata: " + str(balance) + "\nretry: 10000\n\n"
+                            yield "event: balance\ndata: " + str(balance) + "\nretry: 10000\n\n"
 
                             # Remove the line from the file
                             lines.remove(line)
