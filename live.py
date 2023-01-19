@@ -8,7 +8,7 @@ from fastapi.responses import PlainTextResponse
 from sse_starlette.sse import EventSourceResponse
 from starlette.requests import Request
 
-from mysql_rq import test_mysql_connection
+from mysql_rq import test_mysql_connection, selectRequest, insertRequest
 from utilities import checkExistingUID, get_balance, getBetslipLive
 
 live = FastAPI(title="Bet4Live", description="Bet4Live API for score, users coins and users betslip",
@@ -51,6 +51,8 @@ def sse(request: Request, uid: str = "Undefined"):
 
     async def event_stream():
         first_load: bool = True
+        balance_has_changed: bool = False
+        betslip_has_changed: bool = False
         try:
             while True:
                 res = {}
@@ -67,49 +69,36 @@ def sse(request: Request, uid: str = "Undefined"):
 
                     first_load = False
 
-                with open(SSE_FILES_PATH + "balance.txt", "r") as balancefile:
-                    lines = balancefile.readlines()
-                    balancefile.close()
-
-                if len(lines) > 0:
-                    for line in lines:
-                        line_notrail = line.strip()
-                        if line_notrail == uid:
+                rq = "SELECT (event) FROM user_live WHERE uid = %s AND yielded = 0"
+                res, nb = selectRequest(rq, (uid,))
+                if nb > 0:
+                    for event in res:
+                        print(event)
+                        if event[0] == "balance":
                             balance: int = get_balance(uid)
-
                             res = {"event": "balance", "data": balance}
                             yield res
 
-                            # Remove the line from the file
-                            lines.remove(line)
-                            with open(SSE_FILES_PATH + "balance.txt", "w") as balancefile:
-                                balancefile.writelines(lines)
-                                balancefile.close()
-                            first_load = False
-                            break
+                            balance_has_changed = True
 
-                with open(SSE_FILES_PATH + "betslip.txt", "r") as betslipfile:
-                    lines = betslipfile.readlines()
-                    betslipfile.close()
-                if len(lines) > 0:
-                    for line in lines:
-                        line_notrail = line.strip()
-
-                        if line_notrail == uid:
+                        if event[0] == "betslip":
                             betslip: list = getBetslipLive(uid)
-
-                            # Yield in correct SSE format
                             res = {"event": "betslip", "data": betslip}
                             yield res
 
-                            # Remove the line from the file
-                            lines.remove(line)
-                            with open(SSE_FILES_PATH + "betslip.txt", "w") as betslipfile:
-                                betslipfile.writelines(lines)
-                                betslipfile.close()
+                            betslip_has_changed = True
 
-                            first_load = False
-                            break
+                        if balance_has_changed:
+                            # Change the yielded value to 1
+                            rq = "UPDATE user_live SET yielded = 1 WHERE uid = %s AND event = 'balance'"
+                            insertRequest(rq, (uid,))
+
+                        if betslip_has_changed:
+                            # Change the yielded value to 1
+                            rq = "UPDATE user_live SET yielded = 1 WHERE uid = %s AND event = 'betslip'"
+                            insertRequest(rq, (uid,))
+
+                        break
 
                 await asyncio.sleep(REFRESH_TIME)
 
