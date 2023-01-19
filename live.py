@@ -129,10 +129,7 @@ def sse(request: Request, uid: str = "Undefined"):
             printf(e)
             raise e
 
-    event_source = EventSourceResponse(event_stream())
-    event_source.active = False
-
-    return event_source
+    return EventSourceResponse(event_stream())
 
 
 if __name__ == "__main__":
