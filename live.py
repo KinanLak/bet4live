@@ -73,7 +73,6 @@ def sse(request: Request, uid: str = "Undefined"):
                 res, nb = selectRequest(rq, (uid,))
                 if nb > 0:
                     for event in res:
-                        print(event)
                         if event[0] == "balance":
                             balance: int = get_balance(uid)
                             res = {"event": "balance", "data": balance}

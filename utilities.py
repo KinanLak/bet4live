@@ -36,8 +36,7 @@ def getBetslipLive(uid: str) -> list[dict[str, str] | None]:
 
     res = []
     for i in range(12):
-        if selected_bid[i] is not None:
-            res.append({"bid": selected_bid[i], "side": selected_side[i]})
+        res.append({"bid": selected_bid[i], "side": selected_side[i]})
 
     return res
 
