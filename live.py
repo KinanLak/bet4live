@@ -2,6 +2,7 @@ import sys
 import time
 import asyncio
 import uvicorn
+import json
 
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
@@ -60,12 +61,12 @@ def sse(request: Request, uid: str = "Undefined"):
                     balance: int = get_balance(uid)
                     res["event"] = "balance"
                     res["data"] = balance
-                    yield res
+                    yield json.dumps(res)
 
                     betslip: list = getBetslipLive(uid)
                     res["event"] = "betslip"
                     res["data"] = betslip
-                    yield res
+                    yield json.dumps(res)
 
                     first_load = False
 
@@ -76,14 +77,14 @@ def sse(request: Request, uid: str = "Undefined"):
                         if event[0] == "balance":
                             balance: int = get_balance(uid)
                             res = {"event": "balance", "data": balance}
-                            yield res
+                            yield json.dumps(res)
 
                             balance_has_changed = True
 
                         if event[0] == "betslip":
                             betslip: list = getBetslipLive(uid)
                             res = {"event": "betslip", "data": betslip}
-                            yield res
+                            yield json.dumps(res)
 
                             betslip_has_changed = True
 
