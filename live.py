@@ -47,7 +47,7 @@ async def index():
 def sse(request: Request, uid: str = "Undefined"):
 
     if not checkExistingUID(uid):
-        return dict(event="error", data="9001")
+        return dict(event="errooor", data="9001")
 
     async def event_stream():
         first_load: bool = True
