@@ -49,6 +49,7 @@ def sse(request: Request, uid: str = "Undefined"):
     async def event_stream():
         if not checkExistingUID(uid):
             yield dict(event="errooor", data="9001")
+            raise asyncio.CancelledError
 
         first_load: bool = True
         balance_has_changed: bool = False
