@@ -1,5 +1,4 @@
 import sys
-import time
 import asyncio
 import uvicorn
 import json
@@ -48,7 +47,7 @@ async def index():
 def sse(request: Request, uid: str = "Undefined"):
 
     if not checkExistingUID(uid):
-        return {"event": "error", "timestamp": int(time.time()), "data": 9001}
+        return dict(event="error", data="9001")
 
     async def event_stream():
         first_load: bool = True
@@ -59,14 +58,12 @@ def sse(request: Request, uid: str = "Undefined"):
                 res = {}
                 if first_load:
                     balance: int = get_balance(uid)
-                    res["event"] = "balance"
                     res["data"] = balance
-                    yield "event: balance\n" + json.dumps(res)
+                    yield dict(event="balance", data=json.dumps(res))
 
                     betslip: list = getBetslipLive(uid)
-                    res["event"] = "betslip"
                     res["data"] = betslip
-                    yield "event: beslip\n" + json.dumps(res)
+                    yield dict(event="betslip", data=json.dumps(res))
 
                     first_load = False
 
@@ -76,15 +73,15 @@ def sse(request: Request, uid: str = "Undefined"):
                     for event in res:
                         if event[0] == "balance":
                             balance: int = get_balance(uid)
-                            res = {"event": "balance", "data": balance}
-                            yield "event: balance\n" + json.dumps(res)
+                            res = {"data": balance}
+                            yield dict(event="balance", data=json.dumps(res))
 
                             balance_has_changed = True
 
                         if event[0] == "betslip":
                             betslip: list = getBetslipLive(uid)
-                            res = {"event": "betslip", "data": betslip}
-                            yield "event: betslip\n" + json.dumps(res)
+                            res = {"data": betslip}
+                            yield dict(event="betslip", data=json.dumps(res))
 
                             betslip_has_changed = True
 
