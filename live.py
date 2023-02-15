@@ -54,6 +54,7 @@ def sse(request: Request, uid: str = "Undefined"):
         first_load: bool = True
         balance_has_changed: bool = False
         betslip_has_changed: bool = False
+        close_has_changed: bool = False
         try:
             while True:
                 res = {}
@@ -86,6 +87,11 @@ def sse(request: Request, uid: str = "Undefined"):
 
                             betslip_has_changed = True
 
+                        if event[0] == "close":
+                            yield dict(event="close", data="9001")
+
+                            close_has_changed = True
+
                         if balance_has_changed:
                             # Change the yielded value to 1
                             rq = "UPDATE user_live SET yielded = 1 WHERE uid = %s AND event = 'balance'"
@@ -94,6 +100,11 @@ def sse(request: Request, uid: str = "Undefined"):
                         if betslip_has_changed:
                             # Change the yielded value to 1
                             rq = "UPDATE user_live SET yielded = 1 WHERE uid = %s AND event = 'betslip'"
+                            insertRequest(rq, (uid,))
+
+                        if close_has_changed:
+                            # Change the yielded value to 1
+                            rq = "UPDATE user_live SET yielded = 1 WHERE uid = %s AND event = 'close'"
                             insertRequest(rq, (uid,))
 
                         break
