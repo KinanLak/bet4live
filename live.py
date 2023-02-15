@@ -47,7 +47,8 @@ async def index():
 def sse(request: Request, uid: str = "Undefined"):
 
     if not checkExistingUID(uid):
-        return dict(event="close", data="9001")
+        yield dict(event="close", data="9001")
+        raise asyncio.CancelledError
 
     async def event_stream():
 
