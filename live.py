@@ -47,8 +47,7 @@ async def index():
 def sse(request: Request, uid: str = "Undefined"):
 
     if not checkExistingUID(uid):
-        yield dict(event="close", data="9001")
-        raise asyncio.CancelledError
+        return dict(event="close", data="9001")
 
     async def event_stream():
 
@@ -102,6 +101,7 @@ def sse(request: Request, uid: str = "Undefined"):
                 await asyncio.sleep(REFRESH_TIME)
 
         except asyncio.CancelledError as e:
+            yield dict(event="close", data="9001")
             raise e
 
     return EventSourceResponse(event_stream())
