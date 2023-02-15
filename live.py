@@ -61,12 +61,12 @@ def sse(request: Request, uid: str = "Undefined"):
                     balance: int = get_balance(uid)
                     res["event"] = "balance"
                     res["data"] = balance
-                    yield json.dumps(res)
+                    yield "event: balance\n" + json.dumps(res)
 
                     betslip: list = getBetslipLive(uid)
                     res["event"] = "betslip"
                     res["data"] = betslip
-                    yield json.dumps(res)
+                    yield "event: beslip\n" + json.dumps(res)
 
                     first_load = False
 
@@ -77,14 +77,14 @@ def sse(request: Request, uid: str = "Undefined"):
                         if event[0] == "balance":
                             balance: int = get_balance(uid)
                             res = {"event": "balance", "data": balance}
-                            yield json.dumps(res)
+                            yield "event: balance\n" + json.dumps(res)
 
                             balance_has_changed = True
 
                         if event[0] == "betslip":
                             betslip: list = getBetslipLive(uid)
                             res = {"event": "betslip", "data": betslip}
-                            yield json.dumps(res)
+                            yield "event: betslip\n" + json.dumps(res)
 
                             betslip_has_changed = True
 
