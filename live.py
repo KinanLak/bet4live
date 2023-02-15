@@ -46,10 +46,10 @@ async def index():
 @live.get("/user")
 def sse(request: Request, uid: str = "Undefined"):
 
-    if not checkExistingUID(uid):
-        return dict(event="errooor", data="9001")
-
     async def event_stream():
+        if not checkExistingUID(uid):
+            yield dict(event="errooor", data="9001")
+
         first_load: bool = True
         balance_has_changed: bool = False
         betslip_has_changed: bool = False
