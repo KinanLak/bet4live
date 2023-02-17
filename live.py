@@ -2,6 +2,7 @@ import sys
 import asyncio
 import uvicorn
 import json
+import datetime
 
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
@@ -47,9 +48,12 @@ async def index():
 def sse(request: Request, uid: str = "Undefined"):
 
     if not checkExistingUID(uid):
-        return dict(event="close", data="9001")
+        print("Pas de user")
+        return dict(event="close", data="9001", id=datetime.datetime.now())
 
     async def event_stream():
+
+        sse_id: int = 0
 
         first_load: bool = True
         balance_has_changed: bool = False
@@ -61,11 +65,15 @@ def sse(request: Request, uid: str = "Undefined"):
                 if first_load:
                     balance: int = get_balance(uid)
                     res["data"] = balance
-                    yield dict(event="balance", data=json.dumps(res))
+                    yield dict(event="balance", data=json.dumps(res), id=sse_id)
+                    sse_id += 1
+                    print("Balance début")
 
                     betslip: list = getBetslipLive(uid)
                     res["data"] = betslip
-                    yield dict(event="betslip", data=json.dumps(res))
+                    yield dict(event="message", data=json.dumps(res), id=sse_id)
+                    sse_id += 1
+                    print("Betslip début")
 
                     first_load = False
 
@@ -76,20 +84,25 @@ def sse(request: Request, uid: str = "Undefined"):
                         if event[0] == "balance":
                             balance: int = get_balance(uid)
                             res = {"data": balance}
-                            yield dict(event="balance", data=json.dumps(res))
+                            yield dict(event="balance", data=json.dumps(res), id=sse_id)
+                            sse_id += 1
+                            print("Balance")
 
                             balance_has_changed = True
 
                         if event[0] == "betslip":
                             betslip: list = getBetslipLive(uid)
                             res = {"data": betslip}
-                            yield dict(event="betslip", data=json.dumps(res))
+                            yield dict(event="betslip", data=json.dumps(res), id=sse_id)
+                            sse_id += 1
+                            print("Betslip")
 
                             betslip_has_changed = True
 
                         if event[0] == "close":
-                            yield dict(event="close", data="9001")
-
+                            yield dict(event="close", data="9001", id=sse_id)
+                            print("Close")
+                            sse_id = 0
                             close_has_changed = True
 
                         if balance_has_changed:
@@ -107,11 +120,10 @@ def sse(request: Request, uid: str = "Undefined"):
                             rq = "UPDATE user_live SET yielded = 1 WHERE uid = %s AND event = 'close'"
                             insertRequest(rq, (uid,))
 
-                        break
-
                 await asyncio.sleep(REFRESH_TIME)
 
         except asyncio.CancelledError as e:
+            print("Cancelled")
             yield dict(event="close", data="9001")
             raise e
 
@@ -120,4 +132,4 @@ def sse(request: Request, uid: str = "Undefined"):
 
 if __name__ == "__main__":
     test_mysql_connection()
-    uvicorn.run("live:live", host="127.0.0.1", port=5002, reload=True)
+    uvicorn.run("live:live", host="0.0.0.0", port=5002, reload=True)
