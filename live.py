@@ -67,13 +67,11 @@ def sse(request: Request, uid: str = "Undefined"):
                     res["data"] = balance
                     yield dict(event="balance", data=json.dumps(res), id=sse_id)
                     sse_id += 1
-                    print("Balance début")
 
                     betslip: list = getBetslipLive(uid)
                     res["data"] = betslip
-                    yield dict(event="message", data=json.dumps(res), id=sse_id)
+                    yield dict(event="betslip", data=json.dumps(res), id=sse_id)
                     sse_id += 1
-                    print("Betslip début")
 
                     first_load = False
 
@@ -86,7 +84,6 @@ def sse(request: Request, uid: str = "Undefined"):
                             res = {"data": balance}
                             yield dict(event="balance", data=json.dumps(res), id=sse_id)
                             sse_id += 1
-                            print("Balance")
 
                             balance_has_changed = True
 
@@ -95,13 +92,11 @@ def sse(request: Request, uid: str = "Undefined"):
                             res = {"data": betslip}
                             yield dict(event="betslip", data=json.dumps(res), id=sse_id)
                             sse_id += 1
-                            print("Betslip")
 
                             betslip_has_changed = True
 
                         if event[0] == "close":
                             yield dict(event="close", data="9001", id=sse_id)
-                            print("Close")
                             sse_id = 0
                             close_has_changed = True
 
