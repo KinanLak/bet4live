@@ -40,7 +40,8 @@ def sse(request: Request, uid: str = "Undefined"):
 
     async def event_stream():
 
-        sse_id: int = 0
+        sse_betslip_id: int = 0
+        sse_balance_id: int = 0
 
         first_load: bool = True
         balance_has_changed: bool = False
@@ -52,13 +53,13 @@ def sse(request: Request, uid: str = "Undefined"):
                 if first_load:
                     balance: int = get_balance(uid)
                     res["data"] = balance
-                    yield dict(event="balance", data=json.dumps(res), id=sse_id)
-                    sse_id += 1
+                    yield dict(event="balance", data=json.dumps(res), id=sse_balance_id)
+                    sse_balance_id += 1
 
                     betslip: list = getBetslipLive(uid)
                     res["data"] = betslip
-                    yield dict(event="betslip", data=json.dumps(res), id=sse_id)
-                    sse_id += 1
+                    yield dict(event="betslip", data=json.dumps(res), id=sse_betslip_id)
+                    sse_betslip_id += 1
 
                     first_load = False
 
@@ -69,22 +70,23 @@ def sse(request: Request, uid: str = "Undefined"):
                         if event[0] == "balance":
                             balance: int = get_balance(uid)
                             res = {"data": balance}
-                            yield dict(event="balance", data=json.dumps(res), id=sse_id)
-                            sse_id += 1
+                            yield dict(event="balance", data=json.dumps(res), id=sse_balance_id)
+                            sse_balance_id += 1
 
                             balance_has_changed = True
 
                         if event[0] == "betslip":
                             betslip: list = getBetslipLive(uid)
                             res = {"data": betslip}
-                            yield dict(event="betslip", data=json.dumps(res), id=sse_id)
-                            sse_id += 1
+                            yield dict(event="betslip", data=json.dumps(res), id=sse_betslip_id)
+                            sse_betslip_id += 1
 
                             betslip_has_changed = True
 
                         if event[0] == "close":
-                            yield dict(event="close", data="9001", id=sse_id)
-                            sse_id = 0
+                            yield dict(event="close", data="9001", id=None)
+                            sse_betslip_id = 0
+                            sse_balance_id = 0
                             close_has_changed = True
 
                         if balance_has_changed:
