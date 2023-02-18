@@ -66,7 +66,8 @@ def sse(request: Request, uid: str = "Undefined"):
                     first_load = False
 
                 rq = "SELECT (event) FROM user_live WHERE uid = %s AND yielded = 0"
-                res, nb = selectRequest(rq, (uid,))
+                res, nb = selectRequest(rq, (uid,), 'all')
+                print(res)
                 if nb > 0:
                     for event in res:
                         if event[0] == "balance":
