@@ -1,14 +1,25 @@
+import json
+import platform
 import mysql.connector
 
 DEBUG = False
 
-mysql_args = {
-    'host': "141.145.203.235",
-    'database': "ape",
-    'user': "python_user",
-    'password': "nathancaca",
-    'port': 3306
-}
+
+def get_mysql_args() -> dict:
+    # Open the secrets.json file and return the mysql_args dict
+    # The pats change depending on the OS (MacOS or Linux)
+    if platform.system() == "Darwin":
+        path = "/Users/kinanlakhdar/secrets.json"
+    elif platform.system() == "Linux":
+        path = "/home/kinanlakhdar/secrets.json"
+    else:
+        raise OSError("Unknown OS")
+    with open(path, "r") as f:
+        mysql_args = json.load(f)
+    return mysql_args
+
+
+mysql_args = get_mysql_args()
 
 
 class MySQL_Error(Exception):

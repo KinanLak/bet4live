@@ -1,4 +1,3 @@
-import sys
 import asyncio
 import uvicorn
 import json
@@ -16,17 +15,6 @@ live = FastAPI(title="Bet4Live", description="Bet4Live API for score, users coin
                version="1.0.0", terms_of_service="https://bet4free.app", debug=True)
 
 REFRESH_TIME = 1
-
-if sys.platform == "darwin":
-    SSE_FILES_PATH = ""
-else:
-    SSE_FILES_PATH = "/home/ubuntu/out/"
-
-
-def printf(text):
-    file = open(SSE_FILES_PATH + "draft.txt", "a")
-    file.write(str(text)+"\n")
-    file.close()
 
 
 @live.get("/", response_class=PlainTextResponse)
