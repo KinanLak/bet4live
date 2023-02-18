@@ -11,7 +11,7 @@ def get_mysql_args() -> dict:
     if platform.system() == "Darwin":
         path = "/Users/kinanlakhdar/secrets.json"
     elif platform.system() == "Linux":
-        path = "/home/kinanlakhdar/secrets.json"
+        path = "/home/ubuntu/const/secrets.json"
     else:
         raise OSError("Unknown OS")
     with open(path, "r") as f:
