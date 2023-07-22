@@ -1,5 +1,5 @@
-fastapi==0.100.0
-mysql-connector-python==8.1.10
-uvicorn==0.23.1
-sse-starlette==1.6.1
-gunicorn==21.2.0
+fastapi
+mysql-connector-python
+uvicorn
+sse-starlette
+gunicorn
