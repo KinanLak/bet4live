@@ -113,8 +113,7 @@ def sse(request: Request, uid: str = "Undefined"):
             yield dict(event="close", data="9001")
             raise e
 
-    return EventSourceResponse(event_stream())
-
+    return EventSourceResponse(event_stream(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
 
 if __name__ == "__main__":
     test_mysql_connection()
